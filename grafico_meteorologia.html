@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabela Meteorológica</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            color: #1e3a8a;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 100px;
+            padding-top: 20px;
+        }
+
+        .header img {
+            max-width: 120px;
+        }
+
+        .text-container {
+            text-align: left;
+        }
+
+        .header h2 {
+            margin: 5px 0;
+            color: #3b82f6;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .button-group button {
+            padding: 12px 20px;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .button-group button:hover {
+            background-color: #2563eb;
+        }
+
+        .table {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+            width: 90%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+        }
+
+        .block {
+            background-color: #ffffff;
+            border: 1px solid #4f93ff;
+            border-radius: 2px;
+            text-align: center;
+            min-height: 180px;
+            overflow: hidden;
+            word-wrap: break-word;
+            position: relative;
+        }
+
+        .block-header {
+            font-size: 16px;
+            font-weight: bold;
+            color: #ffffff;
+            padding: 10px;
+        }
+
+        .block-content {
+            font-size: 14px;
+            color: #555;
+            padding: 20px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 18px;
+            color: #555;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .close-btn:hover {
+            color: #f44336;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 2px;
+            padding: 10px;
+            background-color: #3b82f6;
+            color: white;
+            border-radius: 5px;
+        }
+
+        .footer-separator {
+            width: 100%;
+            height: 4px;
+            background-color: rgb(255, 238, 0);
+            margin: 0;
+        }
+
+        .color-picker {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .color-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .color-option.selected {
+            border-color: #000;
+        }
+
+        /* Ajustes para captura */
+        .capture-background {
+            background-color: white !important;
+        }
+
+        .no-shadow * {
+            box-shadow: none !important;
+        }
+
+        .arrow-btn {
+            position: absolute;
+            bottom: 5px;
+            font-size: 18px; /* Tamanho adequado */
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #4765ec; /* Cor mais suave */
+            padding: 5px;
+            transition: color 0.3s ease;
+        }
+
+        .arrow-left {
+            left: 5px;
+        }
+
+        .arrow-right {
+            right: 5px;
+        }
+
+        .arrow-btn:hover {
+            color: #333; /* Cor mais escura ao passar o mouse */
+        }
+
+        .hide-during-capture {
+            display: none !important;
+        }
+
+    </style>
+</head>
+<body>
+
+<h1>Teste</h1>
+
+<div class="header" id="header">
+    <div class="text-container">
+        <h2>Middle Office</h2>
+        <p id="subtitle" contenteditable="true">Subtítulo...</p>
+    </div>
+    <img src="logo_lightcom.png" alt="Logo">
+</div>
+
+<div class="color-picker" id="colorPicker">
+    <div class="color-option" style="background-color: rgb(0, 204, 204);" data-color="rgb(0, 204, 204)"></div>
+    <div class="color-option" style="background-color: rgb(33, 169, 169);" data-color="rgb(33, 169, 169)"></div>
+    <div class="color-option" style="background-color: rgb(45, 120, 200);" data-color="rgb(45, 120, 200)"></div>
+    <div class="color-option" style="background-color: rgb(25, 70, 170);" data-color="rgb(25, 70, 170)"></div>
+    <div class="color-option" style="background-color: rgb(10, 43, 105);" data-color="rgb(10, 43, 105)"></div>
+</div>
+
+<div class="button-group">
+    <button id="addBlockButton">Adicionar Bloco</button>
+    <button onclick="changeGridColumns(3)">3 Colunas</button>
+    <button onclick="changeGridColumns(4)">4 Colunas</button>
+    <button onclick="changeGridColumns(5)">5 Colunas</button>
+    <button onclick="changeGridColumns(6)">6 Colunas</button>
+    <button id="saveAsPngButton">Salvar como PNG</button>
+</div>
+<div id="formattingMenu" style="display: none; position: absolute; background: #fff; border: 1px solid #ccc; border-radius: 5px; padding: 5px; z-index: 100;">
+    <button onclick="formatText('bold')"><b>B</b></button>
+    <button onclick="formatText('italic')"><i>I</i></button>
+    <button onclick="formatText('underline')"><u>U</u></button>
+    <input type="color" id="textColorPicker" title="Cor do texto" onchange="changeTextColor(this.value)">
+</div>
+
+
+<div class="table" id="blockTable">
+    <!-- Blocos dinâmicos serão adicionados aqui -->
+</div>
+
+<div class="footer-separator"></div>
+<div class="footer" id="footer">
+    Atualizado: <span id="generationDate"></span>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas"></script>
+<script>
+    const formattingMenu = document.getElementById('formattingMenu');
+let activeEditableElement = null;
+
+// Mostra o menu de formatação
+document.addEventListener('selectionchange', () => {
+    const selection = window.getSelection();
+    if (selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        const editableElement = range.startContainer.parentElement.closest('[contenteditable="true"]');
+        
+        if (editableElement) {
+            activeEditableElement = editableElement;
+            const rect = range.getBoundingClientRect();
+            formattingMenu.style.left = `${rect.left + window.scrollX}px`;
+            formattingMenu.style.top = `${rect.top + window.scrollY - 40}px`; // Acima do texto
+            formattingMenu.style.display = 'block';
+        } else {
+            formattingMenu.style.display = 'none';
+        }
+    }
+});
+
+// Aplica formatação no texto selecionado
+function formatText(command) {
+    document.execCommand(command);
+}
+
+// Altera a cor do texto selecionado
+function changeTextColor(color) {
+    document.execCommand('foreColor', false, color);
+}
+
+// Oculta o menu quando clicamos fora
+document.addEventListener('click', (e) => {
+    if (!formattingMenu.contains(e.target) && !e.target.closest('[contenteditable="true"]')) {
+        formattingMenu.style.display = 'none';
+    }
+});
+
+    const blockTable = document.getElementById('blockTable');
+    const addBlockButton = document.getElementById('addBlockButton');
+    const saveAsPngButton = document.getElementById('saveAsPngButton');
+    const colorPicker = document.getElementById('colorPicker');
+
+    let selectedColor = 'rgb(59, 130, 246)'; // Cor padrão
+
+    // Seleção de cor
+    colorPicker.addEventListener('click', (event) => {
+        const target = event.target;
+        if (target.classList.contains('color-option')) {
+            document.querySelectorAll('.color-option').forEach(option => option.classList.remove('selected'));
+            target.classList.add('selected');
+            selectedColor = target.dataset.color;
+        }
+    });
+
+    // Função para mover os blocos para a esquerda ou direita
+function moveBlock(block, direction) {
+    const blocks = Array.from(blockTable.children);
+    const index = blocks.indexOf(block);
+    if (direction === 'left' && index > 0) {
+        blockTable.insertBefore(block, blocks[index - 1]);
+        console.log('Movendo para a esquerda', index);
+    } else if (direction === 'right' && index < blocks.length - 1) {
+        blockTable.insertBefore(block, blocks[index + 2]);
+        console.log('Movendo para a direita', index);
+    }
+}
+
+// Função para adicionar um novo bloco
+function addNewBlock() {
+    const newBlock = document.createElement('div');
+    newBlock.classList.add('block');
+
+    const blockHeader = document.createElement('div');
+    blockHeader.classList.add('block-header');
+    blockHeader.textContent = 'Novo Bloco';
+    blockHeader.style.backgroundColor = selectedColor;
+
+    const blockContent = document.createElement('div');
+    blockContent.classList.add('block-content');
+    blockContent.textContent = 'Conteúdo do bloco...';
+
+    const closeButton = document.createElement('button');
+    closeButton.classList.add('close-btn');
+    closeButton.innerHTML = '&times;';
+    closeButton.onclick = () => newBlock.remove();
+
+    const leftArrow = document.createElement('button');
+    leftArrow.classList.add('arrow-btn', 'arrow-left');
+    leftArrow.innerHTML = '&lt;';
+    leftArrow.onclick = () => moveBlock(newBlock, 'left');  // Movimento para a esquerda
+    console.log("Seta esquerda criada");
+
+    const rightArrow = document.createElement('button');
+    rightArrow.classList.add('arrow-btn', 'arrow-right');
+    rightArrow.innerHTML = '&gt;';
+    rightArrow.onclick = () => moveBlock(newBlock, 'right'); // Movimento para a direita
+    console.log("Seta direita criada");
+
+    newBlock.appendChild(closeButton);
+    newBlock.appendChild(blockHeader);
+    newBlock.appendChild(blockContent);
+    newBlock.appendChild(leftArrow);
+    newBlock.appendChild(rightArrow);
+
+    blockTable.appendChild(newBlock);
+
+    blockHeader.contentEditable = true;
+    blockContent.contentEditable = true;
+}
+
+
+
+    // Função para alterar o número de colunas no grid
+    function changeGridColumns(columns) {
+        blockTable.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
+    }
+
+    function saveAsPng() {
+    const captureArea = document.createElement('div');
+    captureArea.appendChild(document.getElementById('header').cloneNode(true));
+    captureArea.appendChild(blockTable.cloneNode(true));
+
+    // Incluindo explicitamente o separador de rodapé
+    const footerSeparatorClone = document.getElementById('footer').previousElementSibling.cloneNode(true);
+    captureArea.appendChild(footerSeparatorClone);
+    
+    captureArea.appendChild(document.getElementById('footer').cloneNode(true));
+
+    captureArea.style.position = 'absolute';
+    captureArea.style.top = '0';
+    captureArea.style.left = '0';
+    captureArea.style.width = '100%';
+    document.body.appendChild(captureArea);
+
+    // Adiciona a classe para esconder os botões de fechar e setas
+    document.querySelectorAll('.close-btn, .arrow-btn').forEach(button => {
+        button.classList.add('hide-during-capture');
+    });
+
+    html2canvas(captureArea).then(canvas => {
+        // Remove a classe para mostrar novamente os botões
+        document.querySelectorAll('.close-btn, .arrow-btn').forEach(button => {
+            button.classList.remove('hide-during-capture');
+        });
+
+        document.body.removeChild(captureArea);
+        const link = document.createElement('a');
+        link.download = 'tabela_meteorologica.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    });
+}
+
+
+
+        // Atualiza a data no rodapé
+        function updateFooterDate() {
+        const footerDate = document.getElementById('generationDate');
+        footerDate.textContent = new Date().toLocaleDateString('pt-BR', {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+        });
+    }
+
+    // Chama a função de atualização da data ao carregar a página
+    updateFooterDate();
+
+    // Adiciona a funcionalidade de salvar como PNG
+    saveAsPngButton.addEventListener('click', saveAsPng);
+
+    // Adiciona a funcionalidade para adicionar blocos
+    addBlockButton.addEventListener('click', addNewBlock);
+
+</script>
+</body>
+</html>
+
+           
