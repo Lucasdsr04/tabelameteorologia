@@ -11,12 +11,18 @@
             color: #333;
             margin: 0;
             padding: 0;
+            font-size: 18px;
         }
 
         h1 {
             text-align: center;
             margin-top: 20px;
             color: #1e3a8a;
+            font-size: 2.5rem;
+        }
+
+        h2 {
+            font-size: 2rem;
         }
 
         .header {
@@ -76,21 +82,21 @@
             border: 1px solid #4f93ff;
             border-radius: 2px;
             text-align: center;
-            min-height: 180px;
+            min-height: 250px;
             overflow: hidden;
             word-wrap: break-word;
             position: relative;
         }
 
         .block-header {
-            font-size: 16px;
+            font-size: 1.6rem;
             font-weight: bold;
             color: #ffffff;
             padding: 10px;
         }
 
         .block-content {
-            font-size: 14px;
+            font-size: 1.4rem;
             color: #555;
             padding: 20px;
         }
@@ -117,6 +123,7 @@
             background-color: #3b82f6;
             color: white;
             border-radius: 5px;
+            font-size: 1.4rem;
         }
 
         .footer-separator {
@@ -191,7 +198,7 @@
 <div class="header" id="header">
     <div class="text-container">
         <h2>Middle Office</h2>
-        <p id="subtitle" contenteditable="true">Subtítulo...</p>
+        <h3 id="subtitle" contenteditable="true">Subtítulo...</h3>
     </div>
     <img src="logo_lightcom.png" alt="Logo">
 </div>
@@ -372,7 +379,7 @@ function addNewBlock() {
         button.classList.add('hide-during-capture');
     });
 
-    html2canvas(captureArea).then(canvas => {
+    html2canvas(captureArea, { scale: 3}).then(canvas => {
         // Remove a classe para mostrar novamente os botões
         document.querySelectorAll('.close-btn, .arrow-btn').forEach(button => {
             button.classList.remove('hide-during-capture');
