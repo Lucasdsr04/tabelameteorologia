@@ -379,7 +379,7 @@ function addNewBlock() {
         button.classList.add('hide-during-capture');
     });
 
-    html2canvas(captureArea, { scale: 3}).then(canvas => {
+    html2canvas(captureArea, { scale: 1.5}).then(canvas => {
         // Remove a classe para mostrar novamente os botões
         document.querySelectorAll('.close-btn, .arrow-btn').forEach(button => {
             button.classList.remove('hide-during-capture');
